@@ -7,6 +7,7 @@ from skimage.data import astronaut
 from skimage.segmentation import felzenszwalb, slic, quickshift
 from skimage.segmentation import mark_boundaries
 from skimage.util import img_as_float
+from skimage.color import label2rgb
 from PIL import Image
 
 import time
@@ -19,7 +20,7 @@ def load_image( infilename ) :
     data = np.asarray( img, dtype="uint8" )
     return data
 
-im = load_image("clouds.jpg")
+im = load_image("data/paramount.jpg")
 count = 0;
 
 def doSegment(im):
@@ -29,20 +30,24 @@ def doSegment(im):
 	img = img_as_float(im)
 	#img = img_as_float(imgO[::2, ::2])
 
-	#segments_fz = felzenszwalb(img, scale=100, sigma=0.5, min_size=90)
+	segments_fz = felzenszwalb(img, scale=1.0, sigma=1.0, min_size=0)
 	#segments_slic = slic(img, n_segments=250, compactness=10, sigma=1)
-	segments_quick = quickshift(img, kernel_size=10, max_dist=30, ratio=1.0)
+	#segments_quick = quickshift(img, kernel_size=5, max_dist=10, ratio=0.0)
 
-	#if(count % 2 == 0):
-	bounds = mark_boundaries(img, segments_quick,color=(1.0, 1.0, 1.0), mode="subpixel")
-	#else:
-	#	bounds = mark_boundaries(img, segments_quick,color=(1, 1, 1), mode="inner")
+	if(count % 2 == 0):
+		bounds = mark_boundaries(img, segments_fz,color=(0.0, 0.0, 0.0), mode="inner")
+	else:
+		bounds = mark_boundaries(img, segments_fz,color=(1, 1, 1), mode="inner")
 
-	bb = Image.fromarray(np.uint8(bounds*255))
+	labeled = label2rgb(segments_fz, img, alpha=1.0, bg_color=(0,0,0), bg_label=0, colors=[(0,0,0),(1,1,1),(0.25,0.25,0.25),(0.5,0.5,0.5),(0.75,0.75,0.75),(0.1,0.1,0.1),(0.05,0.05,0.05),(0.2,0.2,0.2),(0.15,0.15,0.15)])
+
+	bb = Image.fromarray(np.uint8(labeled*255))
 	bb.show()
 	
-	#bb.save("output/white"+timestr+".jpg",quality=100)
-	bb = bb.resize((500, 500), Image.ANTIALIAS)
+	
+
+	bb.save("output/white"+timestr+".png")
+	#bb = bb.resize((500, 500), Image.NEAREST)
 	count = count + 1
 	#doSegment(bb)
 
