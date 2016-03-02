@@ -20,7 +20,7 @@ def load_image( infilename ) :
     data = np.asarray( img, dtype="uint8" )
     return data
 
-im = load_image("data/paramount.jpg")
+im = load_image("data/A0170.jpg")
 count = 0;
 
 def doSegment(im):
@@ -30,7 +30,7 @@ def doSegment(im):
 	img = img_as_float(im)
 	#img = img_as_float(imgO[::2, ::2])
 
-	segments_fz = felzenszwalb(img, scale=1.0, sigma=1.0, min_size=0)
+	segments_fz = felzenszwalb(img, scale=2.0, sigma=1.0, min_size=0)
 	#segments_slic = slic(img, n_segments=250, compactness=10, sigma=1)
 	#segments_quick = quickshift(img, kernel_size=5, max_dist=10, ratio=0.0)
 
